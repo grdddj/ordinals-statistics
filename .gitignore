@@ -1,6 +1,7 @@
 __pycache__
 ordinals
-ordinals_stats
+ordinals_stats/*
+!ordinals_stats/ord_id_to_tx_id.json
 *.txt
 *.log
 *.out
