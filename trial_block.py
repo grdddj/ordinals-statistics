@@ -1,9 +1,11 @@
-from rpc import connection
 from pathlib import Path
+
+from rpc import connection
 
 HERE = Path(__file__).parent
 
 p = connection()
+
 
 def all_transactions_from_block(block_hash: str) -> None:
     res = p.getblock(block_hash, 2)
@@ -17,7 +19,8 @@ def all_transactions_from_block(block_hash: str) -> None:
                     asm = out.get("scriptPubKey", {}).get("asm", "")
                     if asm.startswith("OP_RETURN"):
                         print(asm)
-  
+
+
 if __name__ == "__main__":
     block = "00000000000000000006af3ce7cdbe82a0b0521e2951ce882c2de18ecbd1e540"
     all_transactions_from_block(block)

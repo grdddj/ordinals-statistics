@@ -1,6 +1,8 @@
 __pycache__
 ordinals
+ordinals_stats
 *.txt
 *.log
 *.out
 *.conf
+*.html

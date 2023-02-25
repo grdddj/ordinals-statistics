@@ -1,6 +1,6 @@
 from pathlib import Path
 
-files = Path(".").glob("op_return*.txt")
+files = Path(".").glob("op_return_*.txt")
 
 prefixes = [
     "CC",
@@ -29,6 +29,7 @@ whole_words = [
     "Samaneh067",
 ]
 
+
 def should_ignore(val: str) -> bool:
     for prefix in prefixes:
         if val.startswith(prefix):
@@ -48,7 +49,7 @@ def should_ignore(val: str) -> bool:
             return True
         except:
             pass
-    
+
     # 0xdfab5e1b90ed151dbc214356ec33fdf9181ef59613a46de0d0ced9800844c8b0
     if len(val) == 66 and val.startswith("0x"):
         try:
@@ -56,7 +57,7 @@ def should_ignore(val: str) -> bool:
             return True
         except:
             pass
-    
+
     # 1xhoGPb8eqfd2ZtKxwJjsBtUu1F23FUSUmeDFcV
     if val[0].isdigit() and 38 <= len(val) <= 42 and " " not in val:
         return True
@@ -67,6 +68,7 @@ def should_ignore(val: str) -> bool:
 
     return False
 
+
 texts = []
 
 for file in files:
@@ -75,7 +77,7 @@ for file in files:
             value = line.split("OP_RETURN")[1].strip()
             try:
                 val = bytes.fromhex(value).decode("utf-8")
-                if should_ignore(val): 
+                if should_ignore(val):
                     # raise Exception("ignore")
                     # print(val)
                     continue

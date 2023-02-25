@@ -1,7 +1,8 @@
-from pathlib import Path
-import requests
-import time
 import threading
+import time
+from pathlib import Path
+
+import requests
 
 HERE = Path(__file__).parent
 
@@ -29,7 +30,7 @@ def fetch_html(tx_id: str) -> None:
 
 def is_already_there(tx_id: str) -> bool:
     return (folder / f"{tx_id}.html").exists()
-    
+
 
 counter = 0
 

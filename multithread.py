@@ -1,11 +1,12 @@
-import threading
-from rpc import connection
-from pathlib import Path
 import datetime
 import logging
 import sys
+import threading
 import time
 from decimal import Decimal
+from pathlib import Path
+
+from rpc import connection
 
 HERE = Path(__file__).parent
 
@@ -19,16 +20,18 @@ logging.basicConfig(
 now = datetime.datetime.now()
 now = now.strftime("%Y-%m-%d_%H-%M-%S")
 
+
 def save_op_return(payload: str, ident: int) -> None:
     path = HERE / f"op_return_{now}-{ident}.txt"
     with open(path, "a") as f:
-        f.write(payload + "\n")      
+        f.write(payload + "\n")
 
 
 def save_ordinal(payload: str, ident: int) -> None:
     path = HERE / f"ordinal_{now}-{ident}.txt"
     with open(path, "a") as f:
-        f.write(payload + "\n")      
+        f.write(payload + "\n")
+
 
 if len(sys.argv) > 1 and sys.argv[1].isdigit():
     block_amount = int(sys.argv[1])
@@ -51,7 +54,7 @@ def is_ordinal(decoded_tx: dict) -> bool:
         return True
 
     for vout in decoded_tx["vout"]:
-        if vout["value"] == Decimal('0.00010000'):
+        if vout["value"] == Decimal("0.00010000"):
             return True
 
     return False
@@ -80,6 +83,7 @@ def analyze_blocks():
                                 save_op_return(f"{tx_id}--{asm}", ident)
         except StopIteration:
             break
+
 
 if __name__ == "__main__":
     for _ in range(no_of_threads):

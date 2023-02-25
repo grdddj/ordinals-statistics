@@ -1,8 +1,9 @@
-from rpc import connection
-from pathlib import Path
 import datetime
 import logging
 from decimal import Decimal
+from pathlib import Path
+
+from rpc import connection
 
 HERE = Path(__file__).parent
 
@@ -26,10 +27,11 @@ def is_ordinal(decoded_tx: dict) -> bool:
         return True
 
     for vout in decoded_tx["vout"]:
-        if vout["value"] == Decimal('0.00010000'):
+        if vout["value"] == Decimal("0.00010000"):
             return True
 
     return False
+
 
 def all_transactions_from_block(block_hash: str) -> None:
     res = p.getblock(block_hash, 2)
@@ -37,7 +39,8 @@ def all_transactions_from_block(block_hash: str) -> None:
         tx_id = tx["txid"]
         if is_ordinal(tx):
             print(tx_id)
-  
+
+
 if __name__ == "__main__":
     all = True
 
@@ -59,5 +62,5 @@ if __name__ == "__main__":
             #     witness = vin.get("txinwitness", [])
             #     print(len(witness))
         vout = decoded_tx["vout"]
-        if len(vout) == 1 and vout[0]["value"] == Decimal('0.00010000'):
+        if len(vout) == 1 and vout[0]["value"] == Decimal("0.00010000"):
             print("OP_RETURN")

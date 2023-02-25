@@ -1,7 +1,8 @@
-from rpc import connection
-from pathlib import Path
 import datetime
 import logging
+from pathlib import Path
+
+from rpc import connection
 
 HERE = Path(__file__).parent
 
@@ -14,16 +15,20 @@ logging.basicConfig(
 
 p = connection()
 
+
 def file() -> Path:
     now = datetime.datetime.now()
     now = now.strftime("%Y-%m-%d_%H-%M-%S")
     return HERE / f"op_return_{now}.txt"
 
+
 OP_FILE = file()
+
 
 def save(txid: str) -> None:
     with open(OP_FILE, "a") as f:
-        f.write(txid + "\n")      
+        f.write(txid + "\n")
+
 
 def all_transactions_from_block(block_hash: str) -> None:
     res = p.getblock(block_hash, 2)
@@ -41,4 +46,3 @@ if __name__ == "__main__":
         block_hash = p.getblockhash(i)
         save(f"----------{block_hash}")
         all_transactions_from_block(block_hash)
-
