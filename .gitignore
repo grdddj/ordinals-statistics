@@ -1,0 +1,6 @@
+__pycache__
+ordinals
+*.txt
+*.log
+*.out
+*.conf
