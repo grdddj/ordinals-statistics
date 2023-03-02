@@ -1,33 +1,9 @@
+from __future__ import annotations
+
 import json
 from collections import defaultdict
-from pathlib import Path
-from typing import TypedDict
 
-HERE = Path(__file__).parent
-
-STATS_FILE = HERE / "ordinals_stats" / "stats.json"
-
-
-# TODO: create a speed experiment comparing TypedDict vs @dataclass
-# TODO: load the data into sqlite3 and compare it with JSON file and in-python dict
-class Inscription(TypedDict):
-    index: int
-    tx_id: str
-    minted_address: str
-    content_type: str
-    timestamp: str
-    content_length: int
-    genesis_fee: int
-    genesis_height: int
-    output_value: int
-    sat_index: int
-
-    # TODO: add the overall size of transaction
-    # TODO: add the overall size of parent transaction
-    # TODO: add the current owner - or at least whether it was already sent to other address
-    # (bcli gettxout tx_id tx_output_index)
-    # TODO: add content_hash (or the hash of the whole witness element)
-    # TODO: add collection name, if any
+from common import STATS_FILE, Inscription
 
 
 def get_data() -> dict[str, Inscription]:
@@ -55,4 +31,9 @@ def total_content_size() -> int:
 
 
 if __name__ == "__main__":
-    print(biggest_sizes(10))
+    # print(biggest_sizes(10))
+    # print(total_content_size())
+
+    types = content_types()
+    for k, v in sorted(types.items(), key=lambda x: x[1], reverse=True):
+        print(f"{k}: {v}")

@@ -1,12 +1,6 @@
 import json
-from pathlib import Path
 
-from ord_stats import Inscription
-
-HERE = Path(__file__).parent
-
-MAPPING_FILE = HERE / "ordinals_stats" / "ord_id_to_tx_id.json"
-STATS_FILE = HERE / "ordinals_stats" / "stats_fixes3.json"
+from common import MAPPING_FILE, MISSING_FILE, STATS_FILE, Inscription
 
 with open(STATS_FILE, "r") as f:
     ORDINALS: dict[str, Inscription] = json.load(f)
@@ -23,6 +17,6 @@ for i in range(1, amount + 1):
         print(f"Missing {i} : {MAPPING[str(i)]}")
         missing.append((str(i), MAPPING[str(i)]))
 
-with open(HERE / "missing.txt", "w") as f:
+with open(MISSING_FILE, "w") as f:
     for item in missing:
         f.write(f"{item[0]} : {item[1]}" + "\n")

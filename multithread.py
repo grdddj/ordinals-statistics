@@ -6,7 +6,7 @@ import time
 from decimal import Decimal
 from pathlib import Path
 
-from rpc import connection
+from common import OP_RETURN_DATA_DIR, rpc_connection
 
 HERE = Path(__file__).parent
 
@@ -22,7 +22,7 @@ now = now.strftime("%Y-%m-%d_%H-%M-%S")
 
 
 def save_op_return(payload: str, ident: int) -> None:
-    path = HERE / f"op_return_{now}-{ident}.txt"
+    path = OP_RETURN_DATA_DIR / f"op_return_{now}-{ident}.txt"
     with open(path, "a") as f:
         f.write(payload + "\n")
 
@@ -36,7 +36,7 @@ def save_ordinal(payload: str, ident: int) -> None:
 if len(sys.argv) > 1 and sys.argv[1].isdigit():
     block_amount = int(sys.argv[1])
 else:
-    block_amount = connection().getblockchaininfo()["blocks"]
+    block_amount = rpc_connection().getblockchaininfo()["blocks"]
 
 all_blocks = iter(range(block_amount, 0, -1))
 
@@ -61,7 +61,7 @@ def is_ordinal(decoded_tx: dict) -> bool:
 
 
 def analyze_blocks():
-    conn = connection()
+    conn = rpc_connection()
     ident = threading.get_ident()
     while True:
         try:
@@ -83,6 +83,8 @@ def analyze_blocks():
                                 save_op_return(f"{tx_id}--{asm}", ident)
         except StopIteration:
             break
+        except Exception as e:
+            logging.exception(e)
 
 
 if __name__ == "__main__":

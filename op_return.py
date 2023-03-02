@@ -2,7 +2,7 @@ import datetime
 import logging
 from pathlib import Path
 
-from rpc import connection
+from common import rpc_connection
 
 HERE = Path(__file__).parent
 
@@ -13,7 +13,7 @@ logging.basicConfig(
     format="%(asctime)s %(message)s",
 )
 
-p = connection()
+p = rpc_connection()
 
 
 def file() -> Path:

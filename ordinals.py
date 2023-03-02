@@ -1,14 +1,12 @@
-import datetime
-import logging
 from decimal import Decimal
 from pathlib import Path
 
-from rpc import connection
+from common import rpc_connection
 
 HERE = Path(__file__).parent
 
 
-p = connection()
+p = rpc_connection()
 
 
 def is_ordinal(decoded_tx: dict) -> bool:

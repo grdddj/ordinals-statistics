@@ -1,13 +1,8 @@
 import json
-from pathlib import Path
 
-HERE = Path(__file__).parent
+from common import MAPPING_FILE, STATS_FOLDER
 
-no_of_threads = 5
-
-folder = HERE / "ordinals_stats"
-chunks_file = folder / "chunks.txt"
-MAPPING_FILE = folder / "ord_id_to_tx_id.json"
+chunks_file = STATS_FOLDER / "chunks.txt"
 
 mapping: dict[int, str] = {}
 

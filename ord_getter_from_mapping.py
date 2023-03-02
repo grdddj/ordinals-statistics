@@ -75,8 +75,7 @@ def get_website():
         try:
             fetch_html(tx_id)
         except Exception as e:
-            logging.info(f"Error with {tx_id}: {e}")
-            continue
+            logging.error(f"Error with {tx_id}: {e}")
 
 
 if __name__ == "__main__":

@@ -1,17 +1,19 @@
-from pathlib import Path
+from common import OP_RETURN_DATA_DIR
 
-files = Path(".").glob("op_return_*.txt")
-
-prefixes = [
+ignore_prefixes = [
     "CC",
     "OUT:",
     "=:BNB.BNB:",
+    "KEEPCASE : ",
     "=:ETH.ETH:",
     "REFUND:",
     "ADD:BTC",
     "SWAPTX:",
     "MIGRATE:",
+    "WREP:",
+    "WITHDRAW:",
     "YGGDRASIL-:",
+    "YGGDRASIL+:",
     "SWAP:",
     "Procertif:",
     "nip5:Tzikin:",
@@ -19,25 +21,17 @@ prefixes = [
     "ion:",
     "DC-L5:",
     "omni",
-]
-
-whole_words = [
-    "bumpfee",
-    "consolidate",
-    "aggregate",
-    "Bitzlato",
-    "Samaneh067",
+    "Transaction Made at",
 ]
 
 
 def should_ignore(val: str) -> bool:
-    for prefix in prefixes:
+    for prefix in ignore_prefixes:
         if val.startswith(prefix):
             return True
 
-    for word in whole_words:
-        if val == word:
-            return True
+    if len(val) < 2:
+        return True
 
     if val[1] == ":" or val.endswith(":0"):
         return True
@@ -47,7 +41,7 @@ def should_ignore(val: str) -> bool:
         try:
             int(val, 16)
             return True
-        except:
+        except ValueError:
             pass
 
     # 0xdfab5e1b90ed151dbc214356ec33fdf9181ef59613a46de0d0ced9800844c8b0
@@ -55,7 +49,7 @@ def should_ignore(val: str) -> bool:
         try:
             int(val[2:], 16)
             return True
-        except:
+        except ValueError:
             pass
 
     # 1xhoGPb8eqfd2ZtKxwJjsBtUu1F23FUSUmeDFcV
@@ -69,27 +63,21 @@ def should_ignore(val: str) -> bool:
     return False
 
 
-texts = []
+unique_texts: set[str] = set()
 
-for file in files:
+for file in OP_RETURN_DATA_DIR.glob("op_return_*.txt"):
     for line in file.open():
-        if "OP_RETURN" in line:
-            value = line.split("OP_RETURN")[1].strip()
-            try:
-                val = bytes.fromhex(value).decode("utf-8")
-                if should_ignore(val):
-                    # raise Exception("ignore")
-                    # print(val)
-                    continue
-                else:
-                    pass
-                    texts.append(val)
-                    # print(val)
-            except:
-                # print("value", value)
-                pass
+        if "OP_RETURN" not in line:
+            continue
+        value = line.split("OP_RETURN")[1].strip()
+        try:
+            val = bytes.fromhex(value).decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if not should_ignore(val):
+            unique_texts.add(val)
 
 
 with open("op_return.txt", "w", encoding="utf8") as f:
-    for text in sorted(texts):
+    for text in sorted(unique_texts):
         f.write(text + "\n")
