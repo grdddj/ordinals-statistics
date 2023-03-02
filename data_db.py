@@ -52,7 +52,7 @@ class InscriptionModel(Base):
     )
 
     def __repr__(self):
-        return f"<Inscription(id={self.id}, tx_id={self.tx_id}, content_type={self.content_type}, content_length={self.content_length:_})>"
+        return f"<Inscription({self.id}, {self.tx_id}, {self.content_type}, {self.content_length:_})>"
 
 
 if __name__ == "__main__":
