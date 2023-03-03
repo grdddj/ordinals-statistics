@@ -49,18 +49,31 @@ def get_entries_from_content_hash(hash: str, limit: int) -> list[InscriptionMode
     )
 
 
-def has_duplicated_content(tx_id: str) -> bool:
+def get_duplicated_content(tx_id: str, limit: int = 5) -> tuple[int, list[InscriptionModel]]:
     session = get_session()
     content_hash = (
-        session.query(InscriptionModel.content_hash).filter_by(tx_id=tx_id).first()[0]
+        session.query(InscriptionModel.content_hash).filter_by(tx_id=tx_id).first()
     )
-    return (
-        session.query(func.count(InscriptionModel.id))
-        .group_by(InscriptionModel.content_hash)
+    if content_hash is None:
+        return 0, []
+    else:
+        content_hash = content_hash[0]
+    amount = (
+        session.query(InscriptionModel)
         .filter_by(content_hash=content_hash)
-        .scalar()
-        > 1
+        .filter(InscriptionModel.tx_id != tx_id)
+        .count()
     )
+    if amount == 0:
+        return amount, []
+    examples = (
+        session.query(InscriptionModel)
+        .filter_by(content_hash=content_hash)
+        .filter(InscriptionModel.tx_id != tx_id)
+        .limit(limit)
+        .all()
+    )
+    return amount, examples
 
 
 def get_most_active_addresses(limit: int) -> list[tuple[str, int]]:
@@ -115,4 +128,4 @@ if __name__ == "__main__":
 
     tx_id = "f58ad8178e7fe78624bcd814cf4b655dab8a6d5f293d4a395a8f24c49aaba78a"
     tx_id = "c734aad65f761e3b3cac88120db17fa1be64242c4a5ef669d5565a08a88a81fa"
-    print(has_duplicated_content(tx_id))
+    print(get_duplicated_content(tx_id))
