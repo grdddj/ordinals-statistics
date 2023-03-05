@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from typing import Iterator
+
 from sqlalchemy import func
 
-from data_db import InscriptionModel, get_session
+from data_db import CollectionModel, InscriptionModel, get_session
 
 
 def get_document_count() -> int:
@@ -104,6 +106,43 @@ def sort_by_timestamp(limit: int) -> list[InscriptionModel]:
     )
 
 
+def get_biggest_collections(limit: int) -> list[tuple[CollectionModel, int]]:
+    session = get_session()
+    return (
+        session.query(
+            CollectionModel,
+            func.count(InscriptionModel.id).label("num_inscriptions"),
+        )
+        .join(CollectionModel.inscriptions)
+        .group_by(CollectionModel.id, CollectionModel.name)
+        .order_by(func.count(InscriptionModel.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def get_collections_using_most_space(limit: int) -> list[tuple[CollectionModel, int]]:
+    session = get_session()
+    return (
+        session.query(
+            CollectionModel,
+            func.sum(InscriptionModel.content_length).label("total_length"),
+        )
+        .join(CollectionModel.inscriptions)
+        .group_by(CollectionModel.id, CollectionModel.name)
+        .order_by(func.sum(InscriptionModel.content_length).desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def all_inscriptions_from_collection(collection_id: str) -> Iterator[InscriptionModel]:
+    session = get_session()
+    collection = session.get(CollectionModel, collection_id)
+    assert collection is not None
+    yield from collection.inscriptions_iter()
+
+
 if __name__ == "__main__":
     # count = get_document_count()
     # print(count)
@@ -134,6 +173,17 @@ if __name__ == "__main__":
     # for item in sorted_by_timestamp:
     #     print(item)
 
-    tx_id = "f58ad8178e7fe78624bcd814cf4b655dab8a6d5f293d4a395a8f24c49aaba78a"
-    tx_id = "c734aad65f761e3b3cac88120db17fa1be64242c4a5ef669d5565a08a88a81fa"
-    print(get_duplicated_content(tx_id))
+    # tx_id = "f58ad8178e7fe78624bcd814cf4b655dab8a6d5f293d4a395a8f24c49aaba78a"
+    # tx_id = "c734aad65f761e3b3cac88120db17fa1be64242c4a5ef669d5565a08a88a81fa"
+    # print(get_duplicated_content(tx_id))
+
+    # collections = get_biggest_collections(10)
+    # for collection, num in collections:
+    #     print(num, collection)
+
+    # collections = get_collections_using_most_space(10)
+    # for collection, num in collections:
+    #     print(num, collection)
+
+    for inscr in all_inscriptions_from_collection("xexadons"):
+        print(inscr)

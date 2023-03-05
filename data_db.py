@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Iterator, Self
 
 from sqlalchemy import (
     Column,
@@ -10,6 +10,7 @@ from sqlalchemy import (
     UniqueConstraint,
     create_engine,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 
 db_location = "/mnt/bitcoin2/ord_data/ord_data.db"
@@ -44,9 +45,7 @@ class InscriptionModel(Base):
     output_value = Column(Integer, nullable=False)
     sat_index = Column(Integer, nullable=False)
     collection_id = Column(String, ForeignKey("inscriptions_collections.id"))
-    collection = relationship(
-        "InscriptionCollectionModel", back_populates="inscriptions"
-    )
+    collection = relationship("CollectionModel", back_populates="inscriptions")
     name_from_collection = Column(String)
 
     # TODO: is_in_collection(self) -> bool
@@ -75,7 +74,7 @@ class InscriptionModel(Base):
         )
 
 
-class InscriptionCollectionModel(Base):
+class CollectionModel(Base):
     __tablename__ = "inscriptions_collections"
 
     id = Column(String, primary_key=True)
@@ -93,6 +92,13 @@ class InscriptionCollectionModel(Base):
         return (
             f"<Collection({self.id}, {self.name}, {self.supply}, {self.description})>"
         )
+
+    @hybrid_property
+    def num_inscriptions(self) -> int:
+        return len(self.inscriptions)
+
+    def inscriptions_iter(self) -> Iterator[InscriptionModel]:
+        return iter(self.inscriptions)
 
     # TODO: methods like overall_size, time-frame of minting, etc.
 

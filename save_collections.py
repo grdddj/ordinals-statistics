@@ -4,7 +4,7 @@ import json
 from typing import Any
 
 from common import ORDINALS_COLLECTIONS_DIR
-from data_db import InscriptionCollectionModel, InscriptionModel, get_session
+from data_db import CollectionModel, InscriptionModel, get_session
 
 collections = {}
 
@@ -25,7 +25,7 @@ for dirpath in ORDINALS_COLLECTIONS_DIR.iterdir():
             twitter_link = meta_data["twitter_link"]
             discord_link = meta_data["discord_link"]
             website_link = meta_data["website_link"]
-            new_collection = InscriptionCollectionModel(
+            new_collection = CollectionModel(
                 id=slug,
                 name=name,
                 inscription_icon=inscription_icon,
