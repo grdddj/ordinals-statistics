@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from collections import defaultdict
 
-from common import STATS_FILE, Inscription
+from common import STATS_FILE, InscriptionDict
 
 
-def get_data() -> dict[str, Inscription]:
+def get_data() -> dict[str, InscriptionDict]:
     return json.loads(STATS_FILE.read_text())
 
 
@@ -18,7 +18,7 @@ def content_types() -> dict[str, int]:
     return content_types
 
 
-def biggest_sizes(limit: int) -> list[Inscription]:
+def biggest_sizes(limit: int) -> list[InscriptionDict]:
     data = get_data()
     res = sorted(data.values(), key=lambda x: x["content_length"], reverse=True)
     return res[:limit]

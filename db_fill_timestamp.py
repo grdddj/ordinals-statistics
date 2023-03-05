@@ -1,8 +1,10 @@
 from datetime import datetime
-from data_db import get_session, InscriptionModel
+
+from data_db import InscriptionModel, get_session
 
 # Get a session object
 session = get_session()
+
 
 # Define a function to convert a datetime string to a Unix timestamp
 def datetime_to_timestamp(dt_str: str) -> int:

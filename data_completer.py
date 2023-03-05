@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from ord_getter_from_mapping import fetch_html
-from ord_stats import Inscription
+from ord_stats import InscriptionDict
 from ord_stats_getter import parse_data
 
 HERE = Path(__file__).parent
@@ -26,7 +26,7 @@ with open(MISSING_FILE, "r") as f:
 #     webbrowser.open(url, new=0, autoraise=True)
 # 1/0
 
-FIXED: dict[int, Inscription] = {}
+FIXED: dict[int, InscriptionDict] = {}
 
 failed: list[str] = []
 
@@ -44,7 +44,7 @@ for ord_id, tx_id in missing_ords:
 print("failed", failed)
 
 with open(STATS_FILE, "r") as f:
-    ORDINALS: dict[str, Inscription] = json.load(f)
+    ORDINALS: dict[str, InscriptionDict] = json.load(f)
 
 for ord_id, inscription in ORDINALS.items():
     FIXED[int(ord_id)] = inscription

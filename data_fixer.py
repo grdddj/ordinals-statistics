@@ -1,15 +1,15 @@
 import json
 
-from common import STATS_FILE, STATS_FOLDER, Inscription
+from common import STATS_FILE, STATS_FOLDER, InscriptionDict
 
 FIXED_FILE = STATS_FOLDER / "stats_fixes2.json"
 
 HASH_FILE = STATS_FOLDER / "all_hashes.txt"
 
-FIXED: dict[int, Inscription] = {}
+FIXED: dict[int, InscriptionDict] = {}
 
 with open(STATS_FILE, "r") as f:
-    ORDINALS: dict[str, Inscription] = json.load(f)
+    ORDINALS: dict[str, InscriptionDict] = json.load(f)
 
 with open(HASH_FILE, "r") as f:
     HASHES: dict[str, str] = {}

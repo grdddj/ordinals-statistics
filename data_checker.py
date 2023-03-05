@@ -1,9 +1,9 @@
 import json
 
-from common import MAPPING_FILE, MISSING_FILE, STATS_FILE, Inscription
+from common import MAPPING_FILE, MISSING_FILE, STATS_FILE, InscriptionDict
 
 with open(STATS_FILE, "r") as f:
-    ORDINALS: dict[str, Inscription] = json.load(f)
+    ORDINALS: dict[str, InscriptionDict] = json.load(f)
 
 with open(MAPPING_FILE, "r") as f:
     MAPPING: dict[str, str] = json.load(f)

@@ -1,15 +1,17 @@
+from typing import Self
+
 from sqlalchemy import (
     Column,
     Engine,
+    ForeignKey,
     Index,
     Integer,
     String,
     UniqueConstraint,
     create_engine,
 )
-from sqlalchemy.orm import Query, Session, declarative_base, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 
-# db_location = "example.db"
 db_location = "/mnt/bitcoin2/ord_data/ord_data.db"
 
 
@@ -20,11 +22,6 @@ def get_session() -> Session:
 
 def get_engine() -> Engine:
     return create_engine(f"sqlite:///{db_location}", echo=False)
-
-
-def get_query() -> Query:
-    session = get_session()
-    return session.query(InscriptionModel)
 
 
 # Define the base class for database models
@@ -46,14 +43,58 @@ class InscriptionModel(Base):
     genesis_height = Column(Integer, nullable=False)
     output_value = Column(Integer, nullable=False)
     sat_index = Column(Integer, nullable=False)
+    collection_id = Column(String, ForeignKey("inscriptions_collections.id"))
+    collection = relationship(
+        "InscriptionCollectionModel", back_populates="inscriptions"
+    )
+    name_from_collection = Column(String)
+
+    # TODO: is_in_collection(self) -> bool
 
     __table_args__ = (
         UniqueConstraint("tx_id", name="uq_tx_id"),  # secondary key to tx_id
         Index("ix_inscriptions_id", "id", unique=True),  # for bulk inserts to work
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Inscription({self.id}, {self.tx_id}, {self.content_type}, {self.content_length:_})>"
+
+    def ordinals_com_link(self) -> str:
+        return f"https://ordinals.com/inscriptions/{self.tx_id}i0"
+
+    def mempool_space_link(self) -> str:
+        return f"https://mempool.space/tx/{self.tx_id}"
+
+    @classmethod
+    def by_tx_id(cls, tx_id: str) -> Self:
+        session = get_session()
+        return (
+            session.query(InscriptionModel)
+            .filter(InscriptionModel.tx_id == tx_id)
+            .first()
+        )
+
+
+class InscriptionCollectionModel(Base):
+    __tablename__ = "inscriptions_collections"
+
+    id = Column(String, primary_key=True)
+    name = Column(String)
+    inscription_icon = Column(String)
+    supply = Column(String)
+    slug = Column(String)
+    description = Column(String)
+    twitter_link = Column(String)
+    discord_link = Column(String)
+    website_link = Column(String)
+    inscriptions = relationship("InscriptionModel", back_populates="collection")
+
+    def __repr__(self) -> str:
+        return (
+            f"<Collection({self.id}, {self.name}, {self.supply}, {self.description})>"
+        )
+
+    # TODO: methods like overall_size, time-frame of minting, etc.
 
 
 if __name__ == "__main__":

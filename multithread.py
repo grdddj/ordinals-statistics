@@ -85,6 +85,10 @@ def analyze_blocks():
             break
         except Exception as e:
             logging.exception(e)
+            try:
+                conn.close()
+            finally:
+                conn = rpc_connection()
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import func
 
-from data_db import InscriptionModel, get_query, get_session
+from data_db import InscriptionModel, get_session
 
 
 def get_document_count() -> int:
@@ -16,8 +16,13 @@ def get_total_content_size() -> int:
 
 
 def get_n_biggest_sizes(n: int) -> list[InscriptionModel]:
-    query = get_query()
-    return query.order_by(InscriptionModel.content_length.desc()).limit(n).all()
+    session = get_session()
+    return (
+        session.query(InscriptionModel)
+        .order_by(InscriptionModel.content_length.desc())
+        .limit(n)
+        .all()
+    )
 
 
 def content_types_with_amounts() -> list[tuple[str, int]]:
@@ -49,7 +54,9 @@ def get_entries_from_content_hash(hash: str, limit: int) -> list[InscriptionMode
     )
 
 
-def get_duplicated_content(tx_id: str, limit: int = 5) -> tuple[int, list[InscriptionModel]]:
+def get_duplicated_content(
+    tx_id: str, limit: int = 5
+) -> tuple[int, list[InscriptionModel]]:
     session = get_session()
     content_hash = (
         session.query(InscriptionModel.content_hash).filter_by(tx_id=tx_id).first()
@@ -88,9 +95,10 @@ def get_most_active_addresses(limit: int) -> list[tuple[str, int]]:
 
 
 def sort_by_timestamp(limit: int) -> list[InscriptionModel]:
-    query = get_query()
+    session = get_session()
     return (
-        query.order_by(func.datetime(InscriptionModel.timestamp, "unixepoch").asc())
+        session.query(InscriptionModel)
+        .order_by(func.datetime(InscriptionModel.timestamp, "unixepoch").asc())
         .limit(limit)
         .all()
     )

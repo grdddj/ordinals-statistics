@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 
 from common import rpc_connection
 

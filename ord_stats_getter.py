@@ -5,7 +5,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from ord_stats import STATS_FILE, Inscription
+from ord_stats import STATS_FILE, InscriptionDict
 
 HERE = Path(__file__).parent
 
@@ -21,7 +21,7 @@ HERE = Path(__file__).parent
 html_file_foler = HERE / "ordinals"
 
 
-def parse_data(file: Path) -> Inscription:
+def parse_data(file: Path) -> InscriptionDict:
     html_content = file.read_text()
     soup = BeautifulSoup(html_content, "html.parser")
 
@@ -41,7 +41,7 @@ def parse_data(file: Path) -> Inscription:
     for i in range(0, len(keys_and_values), 2):
         kv_dict[keys_and_values[i]] = keys_and_values[i + 1]
 
-    return Inscription(
+    return InscriptionDict(
         index=index_num,
         tx_id=tx_id,
         minted_address=kv_dict.get("address", ""),
@@ -62,7 +62,7 @@ def analyze() -> None:
     already_have = set()
     if STATS_FILE.exists():
         with open(STATS_FILE, "r") as f:
-            ORDINALS: dict[str, Inscription] = json.load(f)
+            ORDINALS: dict[str, InscriptionDict] = json.load(f)
             for val in ORDINALS.values():
                 already_have.add(val["tx_id"])
     else:

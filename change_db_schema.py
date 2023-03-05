@@ -17,6 +17,16 @@ sql_script = """
 ALTER TABLE inscriptions
 RENAME COLUMN unix_timestamp TO timestamp;
 """
+sql_script = """
+ALTER TABLE inscriptions
+ADD COLUMN name_from_collection TEXT;
+"""
+sql_script = """
+ALTER TABLE inscriptions
+ADD COLUMN collection_id TEXT REFERENCES inscriptions_collections(name);
+"""
+sql_script = "DROP TABLE IF EXISTS alembic_version;"
+sql_script = "DROP TABLE IF EXISTS inscriptions_collections;"
 
 # Execute the SQL script
 with conn:
