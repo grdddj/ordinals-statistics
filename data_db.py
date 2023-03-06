@@ -58,8 +58,11 @@ class InscriptionModel(Base):
     def __repr__(self) -> str:
         return f"<Inscription({self.id}, {self.tx_id}, {self.content_type}, {self.content_length:_})>"
 
+    def tx_id_ellipsis(self) -> str:
+        return f"{self.tx_id[:4]}...{self.tx_id[-4:]}"
+
     def ordinals_com_link(self) -> str:
-        return f"https://ordinals.com/inscriptions/{self.tx_id}i0"
+        return f"https://ordinals.com/inscription/{self.tx_id}i0"
 
     def mempool_space_link(self) -> str:
         return f"https://mempool.space/tx/{self.tx_id}"
@@ -92,6 +95,9 @@ class CollectionModel(Base):
         return (
             f"<Collection({self.id}, {self.name}, {self.supply}, {self.description})>"
         )
+
+    def link_ordinalswallet(self) -> str:
+        return f"https://ordinalswallet.com/collection/{self.id}"
 
     @hybrid_property
     def num_inscriptions(self) -> int:

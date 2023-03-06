@@ -4,18 +4,19 @@ from common import MAPPING_FILE
 from data_db import InscriptionModel, get_session
 from db_update_inscriptions import fill_new_inscription
 
-with open(MAPPING_FILE, "r") as f:
-    MAPPING = json.load(f)
 
-session = get_session()
+def fill_all_missing_inscriptions() -> None:
+    with open(MAPPING_FILE, "r") as f:
+        MAPPING: dict[str, str] = json.load(f)
 
-missing: list[int] = []
-for key, value in MAPPING.items():
-    if session.get(InscriptionModel, int(key)) is None:
-        print(f"Ordinal {key} not found")
-        missing.append(int(key))
+    session = get_session()
 
-print(f"Missing: {missing}")
+    for ord_id, tx_id in MAPPING.items():
+        ord_id = int(ord_id)
+        if session.get(InscriptionModel, ord_id) is None:
+            print(f"Ordinal {ord_id} not found")
+            fill_new_inscription(ord_id, tx_id)
 
-for miss in missing:
-    fill_new_inscription(miss, MAPPING[str(miss)])
+
+if __name__ == "__main__":
+    fill_all_missing_inscriptions()
