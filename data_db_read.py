@@ -27,12 +27,23 @@ def get_n_biggest_sizes(n: int) -> list[InscriptionModel]:
     )
 
 
-def content_types_with_amounts() -> list[tuple[str, int]]:
+def get_n_most_expensive(n: int) -> list[InscriptionModel]:
+    session = get_session()
+    return (
+        session.query(InscriptionModel)
+        .order_by(InscriptionModel.genesis_fee.desc())
+        .limit(n)
+        .all()
+    )
+
+
+def content_types_with_amounts(limit: int) -> list[tuple[str, int]]:
     session = get_session()
     return (
         session.query(InscriptionModel.content_type, func.count(InscriptionModel.id))
         .group_by(InscriptionModel.content_type)
         .order_by(func.count(InscriptionModel.id).desc())
+        .limit(limit)
         .all()
     )
 

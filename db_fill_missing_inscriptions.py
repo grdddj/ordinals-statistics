@@ -11,11 +11,16 @@ def fill_all_missing_inscriptions() -> None:
 
     session = get_session()
 
-    for ord_id, tx_id in MAPPING.items():
+    all_ord_ids_from_db = set(session.query(InscriptionModel.id).all())
+
+    for ord_id, tx_id in reversed(MAPPING.items()):
         ord_id = int(ord_id)
-        if session.get(InscriptionModel, ord_id) is None:
-            print(f"Ordinal {ord_id} not found")
-            fill_new_inscription(ord_id, tx_id)
+        if ord_id not in all_ord_ids_from_db:
+            res = fill_new_inscription(ord_id, tx_id)
+            if res:
+                print(f"Ordinal {ord_id} added")
+            else:
+                print(f"Failed to add {ord_id} - {tx_id}")
 
 
 if __name__ == "__main__":

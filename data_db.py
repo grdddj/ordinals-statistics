@@ -64,6 +64,9 @@ class InscriptionModel(Base):
     def ordinals_com_link(self) -> str:
         return f"https://ordinals.com/inscription/{self.tx_id}i0"
 
+    def ordinals_com_content_link(self) -> str:
+        return f"https://ordinals.com/content/{self.tx_id}i0"
+
     def mempool_space_link(self) -> str:
         return f"https://mempool.space/tx/{self.tx_id}"
 

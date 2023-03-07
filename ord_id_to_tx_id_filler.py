@@ -12,6 +12,7 @@ def fill_whatever_is_missing() -> None:
 
     # max_num = max(mapping.keys())
     max_num = get_last_ordinal_index()
+    print("max_num", max_num)
 
     missing: list[int] = []
     for i in range(max_num + 1):

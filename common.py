@@ -208,6 +208,10 @@ class OrdinalTx(Tx):
             assert len(script_parts[0]) == 64, "first part is not 64"
             assert script_parts[-1] == "OP_ENDIF", "no OP_ENDIF"
             assert script_parts[1] == "OP_CHECKSIG", "no OP_CHECKSIG"
+            while script_parts[2] != "0" and script_parts[3] != "OP_IF":
+                # There could be some additional things, like
+                # ['756e69736174', 'aeb98c9e8601', 'OP_2DROP']
+                script_parts.pop(2)
             assert script_parts[2] == "0", "no 2"
             assert script_parts[3] == "OP_IF", "no OP_IF"
             assert script_parts[4] == "6582895", "no 6582895"

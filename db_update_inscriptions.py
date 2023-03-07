@@ -7,10 +7,10 @@ from file_db import ByteData
 from file_db import get_session as file_db_session
 
 
-def fill_new_inscription(id: int, tx_id: str) -> None:
+def fill_new_inscription(id: int, tx_id: str) -> bool:
     inscr = create_new_inscription(id, tx_id)
     if not inscr:
-        return
+        return False
 
     data_session = data_db_session()
     try:
@@ -21,6 +21,8 @@ def fill_new_inscription(id: int, tx_id: str) -> None:
         data_session.rollback()
     finally:
         data_session.close()
+
+    return True
 
 
 def create_new_inscription(id: int, tx_id: str) -> InscriptionModel | None:
