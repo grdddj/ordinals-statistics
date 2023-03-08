@@ -6,3 +6,4 @@ __pycache__
 *.conf
 *.dat
 *.db
+deploy.sh

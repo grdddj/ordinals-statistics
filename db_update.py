@@ -72,7 +72,6 @@ def create_new_inscription(id: int, tx_id: str) -> InscriptionModel | None:
 
 
 def fill_all_missing_inscriptions() -> None:
-    logging.info("fill_all_missing_inscriptions started")
     with open(MAPPING_FILE, "r") as f:
         str_mapping: dict[str, str] = json.load(f)
 
@@ -101,7 +100,6 @@ def fill_all_missing_inscriptions() -> None:
 
     logging.info(failed_to_add)
     logging.info(f"Unable to add {len(failed_to_add)}")
-    logging.info("fill_all_missing_inscriptions started")
 
 
 if __name__ == "__main__":
