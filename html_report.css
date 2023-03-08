@@ -1,0 +1,51 @@
+
+
+/* set font family and color */
+body {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* set background color for the document */
+body {
+  background-color: #f7f7f7;
+}
+
+/* style the h1 and h3 headings */
+h1, h3 {
+  margin: 0;
+  padding: 10px 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+/* style the paragraphs */
+p {
+  margin: 0;
+  padding: 5px 0;
+  text-align: center;
+}
+
+/* style the table */
+table {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+table th, table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+table th {
+  background-color: #eee;
+  font-weight: bold;
+}

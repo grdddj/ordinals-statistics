@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +10,7 @@ from typing import Self
 from typing_extensions import TypedDict
 
 from bitcoin.rpc import RawProxy
+from logger import logging
 
 HERE = Path(__file__).parent
 
@@ -29,13 +29,6 @@ HASH_FILE = ORD_DATA_DIR / "all_hashes.txt"
 MISSING_FILE = HERE / "missing.txt"
 
 BTC_SATOSHI = 100_000_000
-
-log_file_path = HERE / "common.log"
-logging.basicConfig(
-    filename=log_file_path,
-    level=logging.INFO,
-    format="%(asctime)s %(message)s",
-)
 
 
 def rpc_connection() -> RawProxy:

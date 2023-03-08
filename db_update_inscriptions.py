@@ -19,6 +19,7 @@ def fill_new_inscription(id: int, tx_id: str) -> bool:
     except IntegrityError as e:
         logging.info(f"IntegrityError Data: {tx_id} - {e}")
         data_session.rollback()
+        return False
     finally:
         data_session.close()
 

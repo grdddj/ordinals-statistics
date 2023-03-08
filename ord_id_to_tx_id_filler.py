@@ -1,6 +1,7 @@
 import json
 
 from common import MAPPING_FILE
+from logger import logging
 from ord_scraper import get_last_ordinal_index, get_specific_indexes
 
 
@@ -12,7 +13,7 @@ def fill_whatever_is_missing() -> None:
 
     # max_num = max(mapping.keys())
     max_num = get_last_ordinal_index()
-    print("max_num", max_num)
+    logging.info("max_num", max_num)
 
     missing: list[int] = []
     for i in range(max_num + 1):
@@ -20,14 +21,13 @@ def fill_whatever_is_missing() -> None:
         if i not in mapping and i != 169689:
             missing.append(i)
 
-    # print("missing", missing)
-    print("missing", len(missing))
+    logging.info("missing", len(missing))
 
     if not missing:
         return
 
     new_data = get_specific_indexes(missing)
-    print("new_data", len(new_data))
+    logging.info("new_data", len(new_data))
 
     if not new_data:
         return
@@ -39,4 +39,9 @@ def fill_whatever_is_missing() -> None:
 
 
 if __name__ == "__main__":
-    fill_whatever_is_missing()
+    logging.info("started fill_whatever_is_missing")
+    try:
+        fill_whatever_is_missing()
+    except Exception as e:
+        logging.exception(f"Unexpected error in fill_whatever_is_missing - {e}")
+    logging.info("ending fill_whatever_is_missing")
