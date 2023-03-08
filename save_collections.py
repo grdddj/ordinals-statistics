@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import Any
 
 from common import ORDINALS_COLLECTIONS_DIR
-from data_db import CollectionModel, InscriptionModel, get_session
+from db_data import CollectionModel, InscriptionModel, get_session
 from logger import logging
 
 
@@ -77,4 +78,6 @@ if __name__ == "__main__":
         save_new_collections()
     except Exception as e:
         logging.exception(f"Unexpected error in save_new_collections - {e}")
+        print("ERROR")
+        sys.exit(1)
     logging.info("ending save_new_collections")

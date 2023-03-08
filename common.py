@@ -1,32 +1,19 @@
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Self
-
-from typing_extensions import TypedDict
 
 from bitcoin.rpc import RawProxy
 from logger import logging
 
 HERE = Path(__file__).parent
 
-STATS_FOLDER = HERE / "ordinals_stats"
-MAPPING_FILE = STATS_FOLDER / "ord_id_to_tx_id.json"
-STATS_FILE = STATS_FOLDER / "stats_ordinals_com.json"
-
-OP_RETURN_DATA_DIR = Path("/mnt/bitcoin2/op_return_data")
+MAPPING_FILE = HERE / "ord_mapping.json"
 
 ORDINALS_COLLECTIONS_DIR = HERE / "ordinals-collections" / "collections"
-
-# ORD_DATA_DIR = Path("/mnt/bitcoin2/ord_data")
-ORD_DATA_DIR = HERE / "ordinals"
-HASH_FILE = ORD_DATA_DIR / "all_hashes.txt"
-
-MISSING_FILE = HERE / "missing.txt"
 
 BTC_SATOSHI = 100_000_000
 
@@ -35,39 +22,12 @@ def rpc_connection() -> RawProxy:
     return RawProxy(service_port=8332, btc_conf_file="mainnet.conf")
 
 
-def load_stats_json() -> dict[str, InscriptionDict]:
-    with open(STATS_FILE, "r") as f:
-        return json.load(f)
-
-
-class InscriptionDict(TypedDict):
-    """For the stats JSON file"""
-
-    index: int
-    tx_id: str
-    minted_address: str
-    content_type: str
-    content_hash: str
-    timestamp: str
-    content_length: int
-    genesis_fee: int
-    genesis_height: int
-    output_value: int
-    sat_index: int
-
-
 @dataclass
 class InscriptionContent:
     content_type: str
     content_hash: str
     content_length: int
     payload: bytes
-
-    # TODO: add the overall size of transaction
-    # TODO: add the overall size of parent transaction
-    # TODO: add the current owner - or at least whether it was already sent to other address
-    # (bcli gettxout tx_id tx_output_index)
-    # TODO: add collection name, if any
 
     def __repr__(self) -> str:
         return f"InscriptionContent(content_type={self.content_type}, content_hash={self.content_hash}, content_length={self.content_length})"
@@ -110,7 +70,7 @@ class BasicBlock:
 
 @dataclass
 class Input:
-    d: dict
+    _d: dict
 
     def __repr__(self) -> str:
         return f"Input(tx_id={self.tx_id}, vout={self.vout})"
@@ -121,15 +81,15 @@ class Input:
 
     @property
     def tx_id(self) -> str:
-        return self.d["txid"]
+        return self._d["txid"]
 
     @property
     def vout(self) -> int:
-        return self.d["vout"]
+        return self._d["vout"]
 
     @property
     def txinwitness(self) -> list[str]:
-        return self.d["txinwitness"]
+        return self._d["txinwitness"]
 
     def value(self, conn: RawProxy) -> int:
         prev_tx = Tx.from_tx_id(self.tx_id, conn)
@@ -138,7 +98,7 @@ class Input:
 
 @dataclass
 class Output:
-    d: dict
+    _d: dict
 
     def __repr__(self) -> str:
         return f"Output(address={self.address}, value={self.value})"
@@ -149,11 +109,11 @@ class Output:
 
     @property
     def address(self) -> str:
-        return self.d.get("scriptPubKey", {}).get("address", "")
+        return self._d.get("scriptPubKey", {}).get("address", "")
 
     @property
     def value(self) -> int:
-        return int(BTC_SATOSHI * self.d["value"])
+        return int(BTC_SATOSHI * self._d["value"])
 
 
 @dataclass
@@ -216,7 +176,6 @@ class OrdinalTx(Tx):
 
             # cleanup
             if script_parts[-2] == "-2":
-                # pop this one
                 script_parts.pop(-2)
 
             data_parts = script_parts[8:-1]

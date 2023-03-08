@@ -1,14 +1,8 @@
 __pycache__
 .ruff_cache
-ordinals
-alembic
-alembic.ini
-ordinals_stats/*
-!ordinals_stats/ord_id_to_tx_id.json
 *.txt
 *.log
 *.out
 *.conf
-*.html
 *.dat
 *.db

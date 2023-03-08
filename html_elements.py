@@ -2,8 +2,8 @@ from datetime import datetime
 
 from dominate.tags import *
 
-from data_db import InscriptionModel
-from data_db_read import (
+from db_data import InscriptionModel
+from db_data_read import (
     content_types_with_amounts,
     get_biggest_collections,
     get_collections_using_most_space,
@@ -227,7 +227,7 @@ def collections_using_most_space(n: int) -> None:
                         )
                     )
                     td(f"{used_space:,}")
-                    td(f"{int(collection.supply):,}")
+                    td(f"{int(collection.supply or 0):,}")
                     td(collection.description)
 
 
