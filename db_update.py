@@ -103,6 +103,9 @@ def fill_all_missing_inscriptions() -> None:
 
 
 if __name__ == "__main__":
+    # res = fill_new_inscription(234694, "15d6101b8f219f1a342d0a8fb16240bb188d2533ed68436fd42cd45613b39dc4")
+    # print("res", res)
+    # 1/0
     logging.info("started fill_all_missing_inscriptions")
     try:
         fill_all_missing_inscriptions()
