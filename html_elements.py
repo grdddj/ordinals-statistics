@@ -87,6 +87,12 @@ def page_resources() -> None:
             href="https://read.pourteaux.xyz/p/illegitimate-bitcoin-transactions",
             target="_blank",
         )
+    with p():
+        a(
+            "Ordinals.wtf - other resources",
+            href="https://ordinals.wtf",
+            target="_blank",
+        )
 
 
 def document_count() -> None:
