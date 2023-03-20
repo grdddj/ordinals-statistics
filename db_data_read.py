@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import Iterator
 
 from sqlalchemy import func
@@ -10,6 +11,43 @@ from db_data import CollectionModel, InscriptionModel, get_session
 def get_document_count() -> int:
     session = get_session()
     return session.query(InscriptionModel).count()
+
+
+def get_document_count_for_last_days(last_n_days: int) -> list[tuple[str, int]]:
+    results = []
+    for i in range(last_n_days):
+        specific_date = (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d")
+        num_inscriptions = document_count_on_day(specific_date)
+        results.append((specific_date, num_inscriptions))
+    return list(reversed(results))
+
+
+def document_count_on_day(day_str: str) -> int:
+    session = get_session()
+    return (
+        session.query(func.count(InscriptionModel.id))
+        .filter(InscriptionModel.datetime.startswith(day_str))
+        .scalar()
+    )
+
+
+def get_document_size_for_last_days(last_n_days: int) -> list[tuple[str, int]]:
+    results = []
+    for i in range(last_n_days):
+        specific_date = (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d")
+        num_inscriptions = document_size_on_day_mb(specific_date)
+        results.append((specific_date, num_inscriptions))
+    return list(reversed(results))
+
+
+def document_size_on_day_mb(day_str: str) -> float:
+    session = get_session()
+    byte_size = (
+        session.query(func.sum(InscriptionModel.content_length))
+        .filter(InscriptionModel.datetime.startswith(day_str))
+        .scalar()
+    )
+    return byte_size // 1_000_000
 
 
 def get_total_content_size() -> int:
@@ -196,5 +234,11 @@ if __name__ == "__main__":
     # for collection, num in collections:
     #     print(num, collection)
 
-    for inscr in all_inscriptions_from_collection("xexadons"):
-        print(inscr)
+    # for inscr in all_inscriptions_from_collection("xexadons"):
+    #     print(inscr)
+
+    # for day, count in get_document_count_for_last_days(20):
+    #     print(day, count)
+
+    for day, count in get_document_size_for_last_days(2):
+        print(day, count)

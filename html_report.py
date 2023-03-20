@@ -10,8 +10,12 @@ from html_elements import (
     bizzare,
     collections_using_most_space,
     content_size,
+    content_size_graph,
+    content_size_graph_script,
     content_types,
     document_count,
+    document_count_graph,
+    document_count_graph_script,
     duplicated_content,
     most_expensive_inscriptions,
     page_footer,
@@ -33,8 +37,13 @@ def create_report() -> None:
     # Add CSS to the head section
     with doc.head:
         meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
-        meta(description="Statistics about Bitcoin and mostly ordinals/inscriptions. Data about duplicated ordinals - not seen anywhere else. Also useful resources to learn.")
+        meta(
+            name="viewport",
+            content="width=device-width, initial-scale=1, maximum-scale=1",
+        )
+        meta(
+            description="Statistics about Bitcoin and mostly ordinals/inscriptions. Data about duplicated ordinals - not seen anywhere else. Also useful resources to learn."
+        )
         meta(keywords="Bitcoin ordinals inscriptions")
         meta(author="grdddj - https://github.com/grdddj")
         link(
@@ -44,6 +53,7 @@ def create_report() -> None:
             crossorigin="anonymous",
         )
         style(css_file.read_text())
+        script(src="https://cdn.jsdelivr.net/npm/chart.js")
 
     # Add some content to the document
     with doc:
@@ -57,6 +67,8 @@ def create_report() -> None:
                     with div():
                         document_count()
                     with div():
+                        document_count_graph()
+                    with div():
                         biggest_inscriptions(10)
                     with div():
                         content_types(10)
@@ -66,6 +78,8 @@ def create_report() -> None:
                 with div(cls="col-md-6"):
                     with div():
                         content_size()
+                    with div():
+                        content_size_graph()
                     with div():
                         most_expensive_inscriptions(10)
                     with div():
@@ -80,6 +94,9 @@ def create_report() -> None:
         page_resources()
         hr()
         page_footer()
+
+        script(document_count_graph_script(30))
+        script(content_size_graph_script(30))
 
     # Save the document to a file
     with open(file_path, "w") as f:

@@ -8,6 +8,8 @@ from db_data_read import (
     get_biggest_collections,
     get_collections_using_most_space,
     get_document_count,
+    get_document_count_for_last_days,
+    get_document_size_for_last_days,
     get_duplicate_content_hashes,
     get_entries_from_content_hash,
     get_n_biggest_sizes,
@@ -99,6 +101,126 @@ def document_count() -> None:
     doc_count = get_document_count()
     h3("Ordinals count")
     p(f"Total number of documents: {doc_count:,}")
+
+
+def _two_y_axes_graph(
+    x_values: list[str],
+    y_values: list[int],
+    title: str,
+    main_label: str,
+    secondary_label: str,
+    chart_id: str,
+) -> str:
+    days_str = ",".join([f"'{x}'" for x in x_values])
+    counts_str = ",".join([str(x) for x in y_values])
+
+    count_running_total = 0
+    counts_running_total = []
+    for count in y_values:
+        count_running_total += count
+        counts_running_total.append(count_running_total)
+    running_total_str = ",".join([str(x) for x in counts_running_total])
+
+    variables = f"""
+const labels = [{days_str}];
+const data = [{counts_str}];
+const data_running_total = [{running_total_str}];
+const main_label = '{main_label}';
+const secondary_label = '{secondary_label}';
+const title = '{title}';
+const chart_id = '{chart_id}';
+"""
+
+    graph = """\
+// Depending on the following variables:
+// labels, data, data_running_total, main_label, secondary_label, title, chart_id
+const chart = document.getElementById(chart_id);
+new Chart(chart, {
+    type: 'bar',
+    data: {
+        labels: labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: main_label,
+          data: data,
+          borderWidth: 1,
+          yAxisID: 'y_left'
+        },
+        {
+          type: 'line',
+          label: secondary_label,
+          data: data_running_total,
+          borderWidth: 1,
+          yAxisID: 'y_right'
+        }
+      ]
+    },
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: title,
+                font: {
+                    size: 18,
+                    weight: 'bold'
+                }
+            }
+        },
+        scales: {
+          y_left: {
+              beginAtZero: true,
+              type: 'linear',
+              position: 'left'
+          },
+          y_right: {
+              beginAtZero: true,
+              type: 'linear',
+              position: 'right'
+          }
+        }
+    }
+});
+"""
+    # Wrapped in a closure to avoid polluting the global namespace
+    # and avoid name collisions
+    return "{" + variables + graph + "}"
+
+
+def document_count_graph() -> None:
+    canvas(id="document_count_graph")
+
+
+def document_count_graph_script(last_n_days: int) -> str:
+    result = get_document_count_for_last_days(last_n_days)
+    days = [x[0] for x in result]
+    counts = [x[1] for x in result]
+    return _two_y_axes_graph(
+        x_values=days,
+        y_values=counts,
+        title=f"Last {last_n_days} days document count",
+        main_label="Document count",
+        secondary_label="Running total",
+        chart_id="document_count_graph",
+    )
+
+
+def content_size_graph() -> None:
+    canvas(id="content_size_graph")
+
+
+def content_size_graph_script(last_n_days: int) -> str:
+    result = get_document_size_for_last_days(last_n_days)
+    days = [x[0] for x in result]
+    counts = [x[1] for x in result]
+    return _two_y_axes_graph(
+        x_values=days,
+        y_values=counts,
+        title=f"Last {last_n_days} days document sizes",
+        main_label="Document size [MB]",
+        secondary_label="Running total [MB]",
+        chart_id="content_size_graph",
+    )
 
 
 def biggest_inscriptions(n: int) -> None:
